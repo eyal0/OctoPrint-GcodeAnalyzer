@@ -1,4 +1,6 @@
 import re
+import json
+from collections import defaultdict
 
 def get_analysis_from_gcode(machinecode_path):
   """Extracts the analysis data structure from the gocde.
@@ -13,6 +15,8 @@ def get_analysis_from_gcode(machinecode_path):
   printing_seconds = None
   with open(machinecode_path) as gcode_lines:
     for gcode_line in gcode_lines:
+      if not gcode_line[0].startswith(";"):
+        continue # This saves a lot of time
       m = re.match('\s*;\s*filament used\s*=\s*([0-9.]+)\s*mm\s*\(([0-9.]+)cm3\)\s*', gcode_line)
       if m:
         filament_length = float(m.group(1))
