@@ -1,20 +1,27 @@
 # coding=utf-8
 from __future__ import absolute_import
-
-### (Don't forget to remove me)
-# This is a basic skeleton for your plugin's __init__.py. You probably want to adjust the class name of your plugin
-# as well as the plugin mixins it's subclassing from. This is really just a basic skeleton to get you started,
-# defining your plugin as a template plugin, settings and asset plugin. Feel free to add or remove mixins
-# as necessary.
-#
-# Take a look at the documentation on what other plugin mixins are available.
+from octoprint.filemanager.analysis import AbstractAnalysisQueue
 
 import octoprint.plugin
+import slic3r
 
-class GcodeanalyzerPlugin(octoprint.plugin.TemplatePlugin):
+class FileCommentGcodeAnalysisQueue(AbstractAnalysisQueue):
+  """Extracts gcode analysis from the comments in the code."""
+
+  def _do_analysis(self, high_priority=False):
+    self._logger.info("GcodeAnalyzer starting on {}".format(self._current.absolute_path))
+    ret = slic3r.get_analysis_from_gcode(self._current.absolute_path)
+    self._logger.info("GcodeAnalyzer results {}".format(ret))
+    return ret
+
+
+class GcodeAnalyzerPlugin(octoprint.plugin.TemplatePlugin):
+
+  ##~~ Gcode Analysis Hook
+  def custom_gcode_analysis_queue(self, *args, **kwargs):
+    return dict(gcode=FileCommentGcodeAnalysisQueue)
 
   ##~~ Softwareupdate hook
-
   def get_update_information(self):
     # Define the configuration for your plugin to use with the Software Update
     # Plugin here. See https://github.com/foosel/OctoPrint/wiki/Plugin:-Software-Update
@@ -43,9 +50,10 @@ __plugin_name__ = "GcodeAnalyzer Plugin"
 
 def __plugin_load__():
   global __plugin_implementation__
-  __plugin_implementation__ = GcodeanalyzerPlugin()
+  __plugin_implementation__ = GcodeAnalyzerPlugin()
 
   global __plugin_hooks__
   __plugin_hooks__ = {
-      "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
+      "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
+      "octoprint.filemanager.analysis.factory": __plugin_implementation__.custom_gcode_analysis_queue
   }
