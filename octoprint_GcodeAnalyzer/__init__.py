@@ -11,7 +11,7 @@ from __future__ import absolute_import
 
 import octoprint.plugin
 
-class GcodeanalyzerPlugin():
+class GcodeanalyzerPlugin(octoprint.plugin.TemplatePlugin):
 
   ##~~ Softwareupdate hook
 
