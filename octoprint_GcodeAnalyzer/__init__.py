@@ -4,14 +4,14 @@ from octoprint.filemanager.analysis import AbstractAnalysisQueue
 from octoprint.filemanager.analysis import GcodeAnalysisQueue
 
 import octoprint.plugin
-import slic3r
+import analyze_slic3r
 
 class FileCommentGcodeAnalysisQueue(GcodeAnalysisQueue):
   """Extracts gcode analysis from the comments in the code."""
 
   def _do_analysis(self, high_priority=False):
     self._logger.info("GcodeAnalyzer starting on {}".format(self._current.absolute_path))
-    ret = slic3r.get_analysis_from_gcode(self._current.absolute_path)
+    ret = analyze_slic3r.get_analysis_from_gcode(self._current.absolute_path)
     if not ret: # Fallback to GcodeAnalysisQueue
       self._logger.info("GcodeAnalyzer found no results")
       ret = super(FileCommentGcodeAnalysisQueue, self)._do_analysis(high_priority)
@@ -19,7 +19,8 @@ class FileCommentGcodeAnalysisQueue(GcodeAnalysisQueue):
     return ret
 
 
-class GcodeAnalyzerPlugin(octoprint.plugin.TemplatePlugin):
+class GcodeAnalyzerPlugin(octoprint.plugin.TemplatePlugin,
+                          octoprint.plugin.RestartNeedingPlugin):
 
   ##~~ Gcode Analysis Hook
   def custom_gcode_analysis_queue(self, *args, **kwargs):
