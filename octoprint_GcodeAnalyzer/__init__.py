@@ -4,7 +4,7 @@ from octoprint.filemanager.analysis import AbstractAnalysisQueue
 from octoprint.filemanager.analysis import GcodeAnalysisQueue
 
 import octoprint.plugin
-import analyze_slic3r
+from . import analyze_slic3r
 
 class FileCommentGcodeAnalysisQueue(GcodeAnalysisQueue):
   """Extracts gcode analysis from the comments in the code."""
