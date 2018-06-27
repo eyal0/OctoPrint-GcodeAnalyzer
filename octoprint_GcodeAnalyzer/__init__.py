@@ -12,11 +12,14 @@ class FileCommentGcodeAnalysisQueue(GcodeAnalysisQueue):
   def _do_analysis(self, high_priority=False):
     self._logger.info("GcodeAnalyzer starting on {}".format(self._current.absolute_path))
     ret = analyze_slic3r.get_analysis_from_gcode(self._current.absolute_path)
-    if not ret: # Fallback to GcodeAnalysisQueue
-      self._logger.info("GcodeAnalyzer found no results")
-      ret = super(FileCommentGcodeAnalysisQueue, self)._do_analysis(high_priority)
-    self._logger.info("GcodeAnalyzer results {}".format(ret))
-    return ret
+    self._logger.info("GcodeAnalyzer reporting {}".format(ret))
+    self._finished_callback(self._current, ret)
+    # Fallback to GcodeAnalysisQueue
+    super_ret = super(FileCommentGcodeAnalysisQueue, self)._do_analysis(high_priority)
+    self._logger.info("GcodeAnalyzer falllback found {}".format(super_ret))
+    super_ret.update(ret)
+    self._logger.info("GcodeAnalyzer final results are {}".format(super_ret))
+    return super_ret
 
 
 class GcodeAnalyzerPlugin(octoprint.plugin.TemplatePlugin,
