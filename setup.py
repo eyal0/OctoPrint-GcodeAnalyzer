@@ -18,10 +18,10 @@ plugin_version = "0.1.0"
 
 # The plugin's description. Can be overwritten within OctoPrint's internal data via __plugin_description__ in the plugin
 # module
-plugin_description = """TODO"""
+plugin_description = """Read comments in gcode files to extra print time estimation and other data"""
 
 # The plugin's author. Can be overwritten within OctoPrint's internal data via __plugin_author__ in the plugin module
-plugin_author = "Eyal Soha"
+plugin_author = "Eyal"
 
 # The plugin's author's mail address.
 plugin_author_email = "eyal0@github.com"
