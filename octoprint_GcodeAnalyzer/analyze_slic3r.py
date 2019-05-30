@@ -4,7 +4,7 @@ from collections import defaultdict
 
 def get_analysis_from_gcode(machinecode_path):
   """Extracts the analysis data structure from the gocde.
-
+  
   The analysis structure should look like this:
   http://docs.octoprint.org/en/master/modules/filemanager.html#octoprint.filemanager.analysis.GcodeAnalysisQueue
   (There is a bug in the documentation, estimatedPrintTime should be in seconds.)
@@ -21,7 +21,17 @@ def get_analysis_from_gcode(machinecode_path):
       if m:
         filament_length = float(m.group(1))
         filament_volume = float(m.group(2))
-      m = re.match('\s*;\s*estimated printing time\s*=\s(.*)\s*', gcode_line)
+      #PrusaSlicer 2.0.0 Formating for length in mm
+      m = re.match('\s*;\s*filament used\s*\[mm\]\s*=\s*([0-9.]+)\s*', gcode_line)
+      if m:
+        filament_length = float(m.group(1))
+      #PrusaSlicer 2.0.0 Formating for volume in cm3
+	  m = re.match('\s*;\s*filament used\s*\[cm3\]\s*=\s*([0-9.]+)\s*', gcode_line)
+      if m:
+        filament_volume = float(m.group(1))
+	  
+	  #inclusive to PrusaSlicer 2.0.0 Formating only capturing "Normal Mode"
+      m = re.match('\s*;\s*estimated printing time\s*(?:\(normal mode\)\s*)?=\s(.*)\s*', gcode_line)
       if m:
         time_text = m.group(1)
         # Now extract the days, hours, minutes, and seconds
